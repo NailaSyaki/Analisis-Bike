@@ -9,8 +9,7 @@ warnings.filterwarnings('ignore')
 
 # ─── PAGE CONFIG ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="🚲 Bike Sharing Analytics",
-    page_icon="🚲",
+    page_title="Bike Sharing Analytics",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -21,15 +20,15 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap');
 
 :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2128;
-    --accent: #00e5a0;
-    --accent2: #ff6b6b;
-    --accent3: #ffd93d;
-    --text: #e6edf3;
-    --muted: #7d8590;
-    --border: #30363d;
+    --bg: #ffffff;    
+    --surface: #f3f4f6; 
+    --surface2: #ffffff;  
+    --accent: #10b981;   
+    --accent2: #ff4757;  
+    --accent3: #ffa502;   
+    --text: #2f3542;     
+    --muted: #a4b0be;  
+    --border: #dfe4ea;   
 }
 
 html, body, [class*="css"] {
@@ -102,7 +101,7 @@ html, body, [class*="css"] {
 
 /* Hero */
 .hero {
-    background: linear-gradient(135deg, #0d2137 0%, #0d1117 60%, #0d1a0d 100%);
+    background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(255,71,87,0.1));
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 40px 48px;
@@ -258,36 +257,77 @@ def load_data():
 
 df_day, rfm_df = load_data()
 
-# ─── PLOTLY THEME ──────────────────────────────────────────────────────────────
+# PLOTLY
 COLORS = {
-    'accent':  '#00e5a0',
-    'accent2': '#ff6b6b',
-    'accent3': '#ffd93d',
-    'accent4': '#7b61ff',
-    'muted':   '#7d8590',
-    'surface': '#161b22',
-    'bg':      '#0d1117',
-    'text':    '#e6edf3',
-    'border':  '#30363d',
+    'bg':      '#ffffff',  
+    'surface': '#f8fafc',    
+    'accent':  '#10b981',   
+    'accent2': '#ff4757',   
+    'accent3': '#ffa502',    
+    'accent4': '#6366f1',   
+    'text':    '#1e293b',   
+    'muted':   '#475569',    
+    'border':  '#e2e8f0',    
 }
-SEASON_COLORS  = {'Spring':'#00e5a0','Summer':'#ffd93d','Fall':'#ff6b6b','Winter':'#7b61ff'}
-WEATHER_COLORS = {'Clear/Partly Cloudy':'#00e5a0','Misty/Cloudy':'#ffd93d',
-                  'Light Snow/Rain':'#7b61ff','Heavy Rain/Ice':'#ff6b6b'}
 
-def apply_dark_layout(fig, title='', height=380):
+SEASON_COLORS  = {
+    'Spring': COLORS['accent'],
+    'Summer': COLORS['accent3'], 
+    'Fall':   COLORS['accent2'], 
+    'Winter': COLORS['accent4']  
+}
+
+WEATHER_COLORS = {
+    'Clear/Partly Cloudy': COLORS['accent'], 
+    'Misty/Cloudy':        COLORS['accent3'],
+    'Light Snow/Rain':     COLORS['accent4'],
+    'Heavy Rain/Ice':      COLORS['accent2']
+}
+
+def apply_light_layout(fig, title='', height=380):
     fig.update_layout(
-        title=title,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(family='DM Sans', color=COLORS['text'], size=12),
+        title=dict(
+            text=title,
+            font=dict(color=COLORS['text'], size=16)
+        ),
+        paper_bgcolor=COLORS['bg'],
+        plot_bgcolor=COLORS['bg'],
+        font=dict(family='DM Sans, sans-serif', color=COLORS['text'], size=12),
         height=height,
-        margin=dict(l=16, r=16, t=40 if title else 16, b=16),
-        xaxis=dict(gridcolor=COLORS['border'], showgrid=True, gridwidth=0.5,
-                   zeroline=False, color=COLORS['muted']),
-        yaxis=dict(gridcolor=COLORS['border'], showgrid=True, gridwidth=0.5,
-                   zeroline=False, color=COLORS['muted']),
-        legend=dict(bgcolor='rgba(0,0,0,0)', bordercolor=COLORS['border'],
-                    borderwidth=1, font=dict(color=COLORS['muted'])),
+        margin=dict(l=16, r=16, t=50 if title else 20, b=16),
+        
+        # Sumbu X
+        xaxis=dict(
+            title_font=dict(color=COLORS['text'], size=12),
+            gridcolor=COLORS['border'], 
+            showgrid=True, 
+            gridwidth=1,
+            zeroline=False, 
+            color=COLORS['muted'],
+            tickfont=dict(color=COLORS['muted'])
+        ),
+        
+        # Sumbu Y
+        yaxis=dict(
+            title_font=dict(color=COLORS['text'], size=12),
+            gridcolor=COLORS['border'], 
+            showgrid=True, 
+            gridwidth=1,
+            zeroline=False, 
+            color=COLORS['muted'],
+            tickfont=dict(color=COLORS['muted'])
+        ),
+        
+        # Legenda
+        legend=dict(
+            bgcolor='rgba(255,255,255,0.8)', 
+            bordercolor=COLORS['border'],
+            borderwidth=1, 
+            font=dict(color=COLORS['text'])
+        ),
+        
+        # Warna deret data (untuk chart garis/batang default)
+        colorway=[COLORS['accent'], COLORS['accent2'], COLORS['accent4'], COLORS['accent3']]
     )
     return fig
 
@@ -411,7 +451,7 @@ with col_left:
         textposition='outside',
         textfont=dict(color=COLORS['text'], size=11),
     ))
-    apply_dark_layout(fig, height=320)
+    apply_light_layout(fig, height=320)
     fig.update_layout(xaxis_title='Rata-rata Harian', yaxis_title='')
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -434,7 +474,7 @@ with col_right:
         textposition='outside',
         textfont=dict(color=COLORS['text'], size=11),
     ))
-    apply_dark_layout(fig2, height=320)
+    apply_light_layout(fig2, height=320)
     fig2.update_layout(yaxis_title='Rata-rata Harian', xaxis_title='',
                        xaxis=dict(tickangle=-15, gridcolor=COLORS['border']))
     st.plotly_chart(fig2, use_container_width=True)
@@ -442,7 +482,7 @@ with col_right:
 
     st.markdown("""
     <div class="insight-box">
-        ⛈️ Cuaca <strong>Heavy Rain/Ice</strong> drastis menurunkan permintaan (hampir 0).
+        ⛈️ Cuaca <strong>Heavy Rain/Ice</strong> drastis menurunkan permintaan (hampir 1000 rata-rata harian).
         Perlu kebijakan <em>fleet withdrawal</em> saat cuaca ekstrem untuk mengurangi risiko kerusakan.
     </div>""", unsafe_allow_html=True)
 
@@ -455,7 +495,7 @@ fig3 = px.scatter(df, x='temp', y='cnt', color='weathersit',
                   trendline_scope='overall',
                   trendline_color_override=COLORS['accent'],
                   labels={'temp':'Suhu (Normalized)','cnt':'Total Penyewaan','weathersit':'Cuaca'})
-apply_dark_layout(fig3, height=360)
+apply_light_layout(fig3, height=360)
 st.plotly_chart(fig3, use_container_width=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -474,7 +514,7 @@ with col_a:
         texttemplate='%{text}',
         textfont=dict(size=11, color=COLORS['text']),
     ))
-    apply_dark_layout(fig_corr, height=360)
+    apply_light_layout(fig_corr, height=360)
     fig_corr.update_layout(margin=dict(l=60, r=16, t=16, b=60))
     st.plotly_chart(fig_corr, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -494,7 +534,7 @@ with col_b:
         fill='tozeroy',
         fillcolor='rgba(0,229,160,0.08)'
     ))
-    apply_dark_layout(fig_month, height=360)
+    apply_light_layout(fig_month, height=360)
     fig_month.update_layout(xaxis_title='Bulan', yaxis_title='Rata-rata Harian')
     st.plotly_chart(fig_month, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -522,7 +562,7 @@ with col_l:
                              text=user_stats['registered'].round(0).astype(int),
                              textposition='outside'))
     fig_usr.update_layout(barmode='group')
-    apply_dark_layout(fig_usr, height=340)
+    apply_light_layout(fig_usr, height=340)
     st.plotly_chart(fig_usr, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -544,13 +584,13 @@ with col_r:
     fig_wk.add_trace(go.Bar(name='Registered', x=wk['weekday_cat'], y=wk['registered'],
                             marker_color=COLORS['accent4']))
     fig_wk.update_layout(barmode='stack')
-    apply_dark_layout(fig_wk, height=340)
+    apply_light_layout(fig_wk, height=340)
     st.plotly_chart(fig_wk, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
     <div class="insight-box">
-        🗓️ Porsi <strong>Casual</strong> paling besar di Sabtu–Minggu.
+        🗓️ Porsi <strong>Casual</strong> paling besar di Jumat-Sabtu.
         Strategi konversi: tawarkan paket berlangganan khusus weekend untuk pengguna casual aktif.
     </div>""", unsafe_allow_html=True)
 
@@ -569,7 +609,7 @@ with col_d1:
         textinfo='label+percent',
         textfont=dict(color=COLORS['text'], size=13),
     ))
-    apply_dark_layout(fig_pie, height=300)
+    apply_light_layout(fig_pie, height=300)
     st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -587,7 +627,7 @@ with col_d2:
         textinfo='label+percent',
         textfont=dict(color=COLORS['text'], size=13),
     ))
-    apply_dark_layout(fig_dem, height=300)
+    apply_light_layout(fig_dem, height=300)
     st.plotly_chart(fig_dem, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -619,7 +659,7 @@ with col_r1:
         text=top_rfm['dteday'].dt.strftime('%Y-%m-%d'),
         hovertemplate='<b>%{text}</b><br>Recency: %{x} hari<br>Total: %{y}<extra></extra>'
     ))
-    apply_dark_layout(fig_rfm, height=360)
+    apply_light_layout(fig_rfm, height=360)
     fig_rfm.update_layout(xaxis_title='Recency (hari)', yaxis_title='Total Penyewaan')
     st.plotly_chart(fig_rfm, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -640,7 +680,7 @@ with col_r2:
             textposition='outside',
             textfont=dict(color=COLORS['text'])
         ))
-        apply_dark_layout(fig_hd, height=360)
+        apply_light_layout(fig_hd, height=360)
         fig_hd.update_layout(xaxis_title='Jumlah Hari High Demand', yaxis_title='')
         st.plotly_chart(fig_hd, use_container_width=True)
     else:
@@ -666,7 +706,7 @@ fig_ts.add_trace(go.Scatter(x=df_sorted['dteday'], y=df_sorted['registered'],
 fig_ts.add_trace(go.Scatter(x=df_sorted['dteday'], y=df_sorted['cnt_ma'],
                              name='Total (7d MA)', mode='lines',
                              line=dict(color=COLORS['accent'], width=2.5)))
-apply_dark_layout(fig_ts, height=360)
+apply_light_layout(fig_ts, height=360)
 fig_ts.update_layout(xaxis_title='Tanggal', yaxis_title='Jumlah Penyewaan')
 st.plotly_chart(fig_ts, use_container_width=True)
 st.markdown('</div>', unsafe_allow_html=True)
@@ -681,10 +721,10 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-    <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:24px;">
+    <div style="background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(255,71,87,0.1)); border:1px solid #30363d; border-radius:12px; padding:24px;">
         <div style="font-family:'Space Mono',monospace; color:#00e5a0; font-size:13px; letter-spacing:2px;
                     text-transform:uppercase; margin-bottom:16px;">🌦️ Manajemen Armada & Cuaca</div>
-        <ul style="padding-left:20px; line-height:2; color:#e6edf3; font-size:14px;">
+        <ul style="padding-left:20px; line-height:2; color:#2f3542; font-size:14px;">
             <li><strong>Musim Gugur (Fall)</strong> → alokasi armada maksimal, tambah unit cadangan</li>
             <li><strong>Musim Semi (Spring)</strong> → lakukan perawatan & servicing armada</li>
             <li>Pasang <strong>sistem peringatan cuaca</strong> untuk tarik armada saat hujan/badai</li>
@@ -695,10 +735,10 @@ with col1:
 
 with col2:
     st.markdown("""
-    <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:24px;">
+    <div style="background:linear-gradient(135deg, rgba(255,217,61,0.1), rgba(255,71,87,0.1)); border:1px solid #30363d; border-radius:12px; padding:24px;">
         <div style="font-family:'Space Mono',monospace; color:#ffd93d; font-size:13px; letter-spacing:2px;
                     text-transform:uppercase; margin-bottom:16px;">👥 Konversi Casual → Registered</div>
-        <ul style="padding-left:20px; line-height:2; color:#e6edf3; font-size:14px;">
+        <ul style="padding-left:20px; line-height:2; color:#2f3542; font-size:14px;">
             <li>Tawarkan <strong>paket weekend membership</strong> ke pengguna casual aktif</li>
             <li>Kirim <strong>push notifikasi</strong> saat cuaca cerah di weekend</li>
             <li>Program <strong>loyalty reward</strong> setelah 5x penyewaan → trial registered 1 bulan gratis</li>
